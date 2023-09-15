@@ -18,4 +18,5 @@ export interface Transaction {
   currency: string;
   value: number;
   id: number;
+  date?: Date;
 }

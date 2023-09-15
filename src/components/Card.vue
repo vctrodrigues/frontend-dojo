@@ -5,6 +5,23 @@ import { Transaction, TransactionIcon, TransactionType } from '@/types/transacti
 const props = defineProps<{ transaction: Transaction }>();
 
 const icon = computed(() => TransactionIcon[props.transaction.type ?? TransactionType.PAYMENT]);
+
+const value = computed(() => {
+  const [symbol, amount] = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: props.transaction.currency,
+  })
+    .format(props.transaction.value)
+    .split('\u00a0');
+
+  const [integer, decimal] = amount.split(',');
+
+  return {
+    symbol,
+    integer,
+    decimal,
+  };
+});
 </script>
 
 <template>
@@ -16,12 +33,11 @@ const icon = computed(() => TransactionIcon[props.transaction.type ?? Transactio
       <span class="app-transaction-card__info__id">#{{ props.transaction.id }}</span>
       <span class="app-transaction-card__info__text">{{ props.transaction.title }}</span>
     </div>
-    <span class="app-transaction-card__value">{{
-      new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: props.transaction.currency,
-      }).format(props.transaction.value)
-    }}</span>
+    <div class="app-transaction-card__value">
+      <span class="app-transaction-card__value__currency">{{ value.symbol }} </span>
+      <span class="app-transaction-card__value__amount">{{ value.integer }}</span>
+      <span class="app-transaction-card__value__decimal">,{{ value.decimal }}</span>
+    </div>
   </div>
 </template>
 
@@ -48,6 +64,21 @@ const icon = computed(() => TransactionIcon[props.transaction.type ?? Transactio
       color: var(--app-color-primary-700);
       font-size: 10px;
     }
+  }
+
+  .app-transaction-card__value__currency {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .app-transaction-card__value__amount {
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .app-transaction-card__value__decimal {
+    font-size: 14px;
+    font-weight: bold;
   }
 }
 </style>

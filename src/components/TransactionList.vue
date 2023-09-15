@@ -1,17 +1,10 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { Transaction, TransactionType } from '@/types/transaction';
+import { computed } from 'vue';
+import store from '@/store';
+import { Transaction } from '@/types/transaction';
 import Card from './Card.vue';
 
-const transactions = ref<Transaction[]>(
-  new Array(10).fill(0).map(() => ({
-    title: 'Pagamento de fatura',
-    currency: 'BRL',
-    value: Math.random() * 1000,
-    id: Math.random() * 1000,
-    type: TransactionType.PAYMENT,
-  })),
-);
+const transactionsByDate = computed(() => store.getters.getTransactions);
 </script>
 
 <template>
@@ -20,9 +13,15 @@ const transactions = ref<Transaction[]>(
       <img src="../assets/layer_icon.svg" alt="icon transaction" />
       <h1 class="app-ml-1">Últimas transações</h1>
     </div>
-    <h3 class="app-mt-3 app-mb-3">Hoje</h3>
-    <div class="app-transaction-list__cards app-align-center">
-      <Card v-for="transaction in transactions" :key="transaction.id" :transaction="transaction" />
+    <div v-for="[date, transactions] in Object.entries(transactionsByDate)" :key="date">
+      <h3 class="app-mt-3 app-mb-3">{{ date }}</h3>
+      <div class="app-transaction-list__cards app-align-center">
+        <Card
+          v-for="transaction in (transactions as Transaction[])"
+          :key="transaction.id"
+          :transaction="transaction"
+        />
+      </div>
     </div>
   </div>
 </template>

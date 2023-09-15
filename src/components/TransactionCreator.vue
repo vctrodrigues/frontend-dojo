@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import store from '@/store';
 import { Transaction, TransactionType } from '@/types/transaction';
 
 import TransactionButton from './TransactionButton.vue';
@@ -9,18 +10,25 @@ const transaction = ref<Transaction>({
   currency: '',
   value: 0,
   id: 0,
+  date: undefined,
 });
-
-const transactions = ref<Transaction[]>([]);
 
 function onSelectType(_type: TransactionType) {
   transaction.value.type = _type;
 }
 
-function addTransaction() {
-  transactions.value.push(transaction.value);
+function onClear() {
+  transaction.value = {
+    title: '',
+    currency: '',
+    value: 0,
+    id: 0,
+  };
+}
 
-  localStorage.setItem('transactions', JSON.stringify(transactions.value));
+function addTransaction() {
+  store.dispatch('addTransaction', transaction.value);
+  onClear();
 }
 
 const types: TransactionType[] = [
